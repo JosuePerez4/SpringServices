@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: productServiceCB
+                fallbackUri: forward:/fallback-products
+
+        - id: product-swagger
+          uri: http://localhost:8081
+          predicates:
+            - Path=/product-swagger/**
+          filters:
+            - RewritePath=/product-swagger/(?<segment>.*), /${segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      productServiceCB:
+        slidingWindowSize: 2
+        minimumNumberOfCalls: 1
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+
+  timelimiter:
+    instances:
+      productServiceCB:
+        timeoutDuration: 2s
