@@ -14,6 +14,7 @@ public class FallbackController {
                 Map.of(
                         "id", -1,
                         "nombre", "Producto no disponible",
-                        "precio", 0.0));
+                        "precio", 0.0,
+                        "informacion", "EL SERVICIO PRODUCTS, NO SE ENCUENTRA DISPONIBLE"));
     }
 }
